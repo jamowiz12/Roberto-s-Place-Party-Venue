@@ -1,15 +1,14 @@
-
 import React from "react";
 import {
   View,
   Text,
-  ScrollView,
   Image,
   Pressable,
   StyleSheet,
-  StatusBar,
+  useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
+import PageShell from "../components/PageShell";
 
 const COLORS = {
   brown: "#38251D",
@@ -22,170 +21,472 @@ const COLORS = {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isWide = width >= 1024;
+  const isTablet = width >= 768;
+
+  const services = [
+    [
+      "01",
+      "Catering",
+      "Thoughtfully prepared menus for intimate dinners and grand celebrations.",
+    ],
+    [
+      "02",
+      "Party Packages",
+      "Complete package options for a beautifully planned event.",
+    ],
+    [
+      "03",
+      "Venue Hosting",
+      "Elegant spaces for moments shared with the people you love.",
+    ],
+  ];
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-
-      {/* STICKY HEADER */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.brand}>ROBERTO&apos;S PLACE</Text>
-          <Text style={styles.subtitle}>PARTY VENUE & CATERING</Text>
-        </View>
-
-        <Pressable style={styles.menuButton}>
-          <Text style={styles.menuIcon}>☰</Text>
-        </Pressable>
-      </View>
-
-    {/* SCROLLABLE CONTENT */}
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-
-        {/* HERO SECTION */}
-        <View style={styles.hero}>
+    <PageShell>
+      <View style={stylesNew.heroWrap}>
+        <View
+          style={[
+            stylesNew.hero,
+            isWide && stylesNew.heroWide,
+            isTablet && stylesNew.heroTablet,
+          ]}
+        >
           <Image
             source={{
-              uri: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1000",
+              uri: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=85",
             }}
-            style={styles.heroImage}
+            style={stylesNew.heroImage}
+            resizeMode="cover"
           />
-
-          <View style={styles.heroOverlay}>
-            <Text style={styles.heroLabel}>
-              CELEBRATE WITH US
-            </Text>
-
-            <Text style={styles.heroTitle}>
-              Every Celebration{"\n"}
-              Deserves Something{"\n"}
-              Special.
-            </Text>
-
-            <Text style={styles.heroDescription}>
-              Delicious food, beautiful moments,
-              and unforgettable celebrations.
-            </Text>
-
-            <Pressable
-              style={styles.primaryButton}
-              onPress={() => router.push("/packages")}
+          <View style={stylesNew.heroShade} />
+          <View style={[stylesNew.heroCopy, isWide && stylesNew.heroCopyWide]}>
+            <Text style={stylesNew.eyebrowLight}>CELEBRATE WITH US</Text>
+            <Text
+              style={[stylesNew.heroTitle, isWide && stylesNew.heroTitleWide]}
             >
-              <Text style={styles.primaryButtonText}>
-                Explore Packages →
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-
-        {/* INTRODUCTION */}
-        <View style={styles.intro}>
-          <Text style={styles.sectionEyebrow}>WELCOME TO ROBERTO&apos;S</Text>
-
-          <Text style={styles.sectionTitle}>
-            Making Your Special Moments Memorable
-          </Text>
-
-          <Text style={styles.bodyText}>
-            From intimate gatherings to grand celebrations,
-            Roberto&apos;s Place brings food, service, and venue
-            experiences together for your special occasions.
-          </Text>
-        </View>
-
-        {/* SERVICES */}
-        <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>WHAT WE OFFER</Text>
-          <Text style={styles.sectionTitle}>Our Services</Text>
-
-          <View style={styles.serviceGrid}>
-            {[
-              ["🍽️", "Catering Services", "Food for every occasion"],
-              ["🎉", "Party Packages", "Celebrate your way"],
-              ["🏛️", "Event Venue", "A place for memories"],
-              ["✨", "Custom Bundles", "Choose your food favorites"],
-            ].map(([icon, title, description]) => (
-              <View key={title} style={styles.serviceCard}>
-                <Text style={styles.serviceIcon}>{icon}</Text>
-                <Text style={styles.serviceTitle}>{title}</Text>
-                <Text style={styles.serviceDescription}>
-                  {description}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* FEATURED FOOD */}
-        <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>MADE FOR YOUR TABLE</Text>
-          <Text style={styles.sectionTitle}>Explore Our Food</Text>
-
-          <View style={styles.foodCard}>
-            <Image
-              source={{
-                uri: "https://images.unsplash.com/photo-1547592180-85f173990554?w=900",
-              }}
-              style={styles.foodImage}
-            />
-            <View style={styles.foodInfo}>
-              <Text style={styles.foodTitle}>Discover Our Menu</Text>
-              <Text style={styles.bodyText}>
-                Explore delicious food choices for your next event.
-              </Text>
-
+              Every celebration deserves something special.
+            </Text>
+            <Text style={stylesNew.heroText}>
+              Food, venue, and thoughtful service brought together for gatherings
+              worth remembering.
+            </Text>
+            <View style={stylesNew.heroActions}>
               <Pressable
-                onPress={() => router.push("/menu")}
+                onPress={() => router.push("/booking")}
+                style={stylesNew.primaryButton}
               >
-                <Text style={styles.textLink}>View Food Menu →</Text>
+                <Text style={stylesNew.primaryText}>Book an event</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/packages")}
+                style={stylesNew.secondaryButton}
+              >
+                <Text style={stylesNew.secondaryText}>Explore packages</Text>
               </Pressable>
             </View>
           </View>
         </View>
+      </View>
 
-        {/* BOOKING CTA */}
-        <View style={styles.bookingSection}>
-          <Text style={styles.bookingTitle}>
-            Planning Something Special?
+      <View style={stylesNew.sectionIntro}>
+        <View style={stylesNew.introCopy}>
+          <Text style={stylesNew.eyebrow}>
+            WELCOME TO ROBERTO&apos;S PLACE
           </Text>
-
-          <Text style={styles.bookingDescription}>
-            Tell us about your event. Let us help you
-            prepare the perfect celebration.
+          <Text style={stylesNew.sectionTitle}>
+            Making your special moments memorable.
           </Text>
+        </View>
+        <Text style={stylesNew.introText}>
+          From intimate gatherings to milestone celebrations, our team brings
+          elegant spaces, generous flavors, and attentive service together in one
+          seamless experience.
+        </Text>
+      </View>
 
+      <View style={stylesNew.servicesSection}>
+        <View style={stylesNew.serviceGrid}>
+          {services.map(([number, title, copy]) => (
+            <View
+              key={title}
+              style={[stylesNew.serviceCard, isWide && stylesNew.serviceCardWide]}
+            >
+              <Text style={stylesNew.serviceNumber}>{number}</Text>
+              <Text style={stylesNew.serviceTitle}>{title}</Text>
+              <Text style={stylesNew.serviceCopy}>{copy}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View
+        style={[stylesNew.featureSection, isWide && stylesNew.featureSectionWide]}
+      >
+        <Image
+          source={{
+            uri: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=85",
+          }}
+          style={[stylesNew.featureImage, isWide && stylesNew.featureImageWide]}
+          resizeMode="cover"
+        />
+        <View style={stylesNew.featureCopy}>
+          <Text style={stylesNew.eyebrow}>CURATED FOR YOUR TABLE</Text>
+          <Text style={stylesNew.featureTitle}>
+            Generous dishes. Familiar favorites. Beautifully served.
+          </Text>
+          <Text style={stylesNew.bodyText}>
+            Explore classic Filipino dishes and celebration favorites prepared
+            for sharing.
+          </Text>
           <Pressable
-            style={styles.bookingButton}
-            onPress={() => router.push("/inquiry")}
+            onPress={() => router.push("/menu")}
+            style={stylesNew.textButton}
           >
-            <Text style={styles.bookingButtonText}>
-              Send an Inquiry →
-            </Text>
+            <Text style={stylesNew.textButtonText}>View food menu →</Text>
           </Pressable>
         </View>
+      </View>
 
-        {/* FOOTER */}
-        <View style={styles.footer}>
-          <Text style={styles.brand}>ROBERTO&apos;S PLACE</Text>
-          <Text style={styles.footerText}>
-            Party Venue & Catering
-          </Text>
-          <Text style={styles.footerText}>
-            Every Celebration Deserves Something Special.
-          </Text>
-          <Text style={styles.copyright}>
-            © 2026 Roberto&apos;s Place Party Venue
+      <View
+        style={[stylesNew.packageSection, isWide && stylesNew.packageSectionWide]}
+      >
+        <View style={stylesNew.packageHeading}>
+          <View>
+            <Text style={stylesNew.eyebrow}>POPULAR CHOICES</Text>
+            <Text style={stylesNew.sectionTitle}>Featured packages</Text>
+          </View>
+          <Pressable onPress={() => router.push("/packages")}>
+            <Text style={stylesNew.textButtonText}>View all packages →</Text>
+          </Pressable>
+        </View>
+        <View style={stylesNew.packageGrid}>
+          {(
+            [
+              ["Silver Celebration", "₱12,500", "For intimate celebrations"],
+              ["Gold Gathering", "₱18,900", "A complete guest experience"],
+              ["Premium Event", "₱26,400", "Elegant, all-inclusive hosting"],
+            ] as const
+          ).map(([name, price, description]) => (
+            <Pressable
+              key={name}
+              onPress={() => router.push("/packages")}
+              style={stylesNew.packageCard}
+            >
+              <Text style={stylesNew.packageName}>{name}</Text>
+              <Text style={stylesNew.packagePrice}>{price}</Text>
+              <Text style={stylesNew.packageDescription}>{description}</Text>
+              <Text style={stylesNew.packageLink}>View package →</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <View style={[stylesNew.cta, isWide && stylesNew.ctaWide]}>
+        <View>
+          <Text style={stylesNew.ctaEyebrow}>START PLANNING</Text>
+          <Text style={stylesNew.ctaTitle}>
+            Let&apos;s plan your next celebration.
           </Text>
         </View>
-      </ScrollView>
-    </View>
+        <Pressable
+          onPress={() => router.push("/inquiry")}
+          style={stylesNew.ctaButton}
+        >
+          <Text style={stylesNew.ctaButtonText}>Send an inquiry</Text>
+        </Pressable>
+      </View>
+    </PageShell>
   );
 }
 
-const styles = StyleSheet.create({
+const stylesNew = StyleSheet.create({
+  heroWrap: { paddingHorizontal: 14 },
+  hero: {
+    height: 520,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "#38251D",
+  },
+  heroTablet: { height: 560, marginHorizontal: 8 },
+  heroWide: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    height: 610,
+    marginHorizontal: 0,
+  },
+  heroImage: { position: "absolute", width: "100%", height: "100%" },
+  heroShade: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(41,29,23,0.58)",
+  },
+  heroCopy: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
+    maxWidth: 620,
+  },
+  heroCopyWide: { paddingHorizontal: 68 },
+  eyebrowLight: {
+    color: "#E6C98F",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 3,
+    marginBottom: 16,
+  },
+  heroTitle: {
+    color: "#FFFFFF",
+    fontFamily: "Georgia",
+    fontSize: 39,
+    lineHeight: 46,
+    fontWeight: "700",
+  },
+  heroTitleWide: { fontSize: 62, lineHeight: 68 },
+  heroText: {
+    color: "#F5EFE6",
+    fontSize: 15,
+    lineHeight: 24,
+    marginTop: 18,
+    maxWidth: 520,
+  },
+  heroActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 24,
+  },
+  primaryButton: {
+    height: 48,
+    borderRadius: 7,
+    backgroundColor: "#C49A55",
+    paddingHorizontal: 18,
+    justifyContent: "center",
+  },
+  primaryText: { color: "#38251D", fontWeight: "900", fontSize: 13 },
+  secondaryButton: {
+    height: 48,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.7)",
+    paddingHorizontal: 18,
+    justifyContent: "center",
+  },
+  secondaryText: { color: "#FFFFFF", fontWeight: "800", fontSize: 13 },
+  sectionIntro: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 64,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 24,
+  },
+  introCopy: { maxWidth: 620 },
+  eyebrow: {
+    color: "#B58A46",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 2.4,
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    color: "#38251D",
+    fontFamily: "Georgia",
+    fontSize: 34,
+    lineHeight: 42,
+    fontWeight: "700",
+  },
+  introText: {
+    color: "#887E74",
+    fontSize: 15,
+    lineHeight: 24,
+    maxWidth: 430,
+    paddingTop: 24,
+  },
+  servicesSection: { backgroundColor: "#FFFFFF", paddingVertical: 42 },
+  serviceGrid: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: 14,
+  },
+  serviceCard: {
+    width: "100%",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ECE3D7",
+    paddingHorizontal: 10,
+    paddingVertical: 24,
+  },
+  serviceCardWide: {
+    width: "33.333%",
+    borderBottomWidth: 0,
+    borderRightWidth: 1,
+    borderRightColor: "#ECE3D7",
+    paddingHorizontal: 28,
+  },
+  serviceNumber: {
+    color: "#C49A55",
+    fontSize: 12,
+    fontWeight: "900",
+    marginBottom: 20,
+  },
+  serviceTitle: {
+    color: "#38251D",
+    fontFamily: "Georgia",
+    fontSize: 24,
+    fontWeight: "700",
+  },
+  serviceCopy: {
+    color: "#887E74",
+    fontSize: 14,
+    lineHeight: 22,
+    marginTop: 10,
+  },
+  featureSection: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 64,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 24,
+  },
+  featureSectionWide: {
+    paddingHorizontal: 24,
+    alignItems: "center",
+    flexWrap: "nowrap",
+  },
+  featureImage: { width: "100%", height: 300, borderRadius: 12 },
+  featureImageWide: { width: "52%", height: 430 },
+  featureCopy: {
+    flexGrow: 1,
+    minWidth: 260,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 16,
+  },
+  featureTitle: {
+    color: "#38251D",
+    fontFamily: "Georgia",
+    fontSize: 32,
+    lineHeight: 40,
+    fontWeight: "700",
+    maxWidth: 520,
+  },
+  bodyText: {
+    color: "#887E74",
+    fontSize: 15,
+    lineHeight: 24,
+    marginTop: 14,
+    maxWidth: 460,
+  },
+  textButton: { marginTop: 18 },
+  textButtonText: { color: "#A77D3D", fontWeight: "900", fontSize: 13 },
+  packageSection: {
+    backgroundColor: "#ECE1D2",
+    paddingHorizontal: 24,
+    paddingVertical: 64,
+  },
+  packageSectionWide: { paddingHorizontal: 48 },
+  packageHeading: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    flexWrap: "wrap",
+    gap: 14,
+    marginBottom: 28,
+  },
+  packageGrid: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 14,
+  },
+  packageCard: {
+    width: "100%",
+    minHeight: 190,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 24,
+    justifyContent: "center",
+  },
+  packageName: {
+    color: "#38251D",
+    fontFamily: "Georgia",
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  packagePrice: {
+    color: "#A77D3D",
+    fontSize: 20,
+    fontWeight: "900",
+    marginTop: 18,
+  },
+  packageDescription: { color: "#887E74", fontSize: 13, marginTop: 7 },
+  packageLink: {
+    color: "#38251D",
+    fontSize: 12,
+    fontWeight: "900",
+    marginTop: 18,
+  },
+  cta: {
+    marginHorizontal: 14,
+    marginVertical: 24,
+    minHeight: 210,
+    backgroundColor: "#38251D",
+    borderRadius: 14,
+    padding: 28,
+    justifyContent: "space-between",
+    gap: 24,
+  },
+  ctaWide: {
+    maxWidth: 1280,
+    width: "100%",
+    alignSelf: "center",
+    marginHorizontal: 0,
+    marginVertical: 48,
+    paddingHorizontal: 54,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  ctaEyebrow: {
+    color: "#C49A55",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 2.4,
+  },
+  ctaTitle: {
+    color: "#FFFFFF",
+    fontFamily: "Georgia",
+    fontSize: 32,
+    lineHeight: 40,
+    marginTop: 8,
+  },
+  ctaButton: {
+    height: 48,
+    borderRadius: 7,
+    backgroundColor: "#C49A55",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 18,
+  },
+  ctaButtonText: { color: "#38251D", fontWeight: "900" },
+
+  // legacy screen implementation preserved below
   container: {
     flex: 1,
     backgroundColor: COLORS.beige,
@@ -224,14 +525,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: COLORS.brown,
   },
-  hero: {
+  heroLegacy: {
     height: 470,
     marginHorizontal: 14,
     borderRadius: 18,
     overflow: "hidden",
     backgroundColor: COLORS.brown,
   },
-  heroImage: {
+  heroImageLegacy: {
     width: "100%",
     height: "100%",
     position: "absolute",
@@ -249,27 +550,27 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 18,
   },
-  heroTitle: {
+  heroTitleLegacy: {
     color: COLORS.white,
     fontSize: 34,
     lineHeight: 42,
     fontWeight: "800",
   },
-  heroDescription: {
+  heroDescriptionLegacy: {
     color: "#F5EFE6",
     fontSize: 14,
     lineHeight: 22,
     marginTop: 16,
     maxWidth: 280,
   },
-  primaryButton: {
+  primaryButtonLegacy: {
     backgroundColor: COLORS.gold,
     padding: 16,
     borderRadius: 9,
     alignSelf: "flex-start",
     marginTop: 25,
   },
-  primaryButtonText: {
+  primaryButtonTextLegacy: {
     color: COLORS.brown,
     fontWeight: "800",
     fontSize: 13,
@@ -285,14 +586,14 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     marginBottom: 10,
   },
-  sectionTitle: {
+  sectionTitleLegacy: {
     color: COLORS.brown,
     fontSize: 25,
     fontWeight: "800",
     lineHeight: 32,
     marginBottom: 12,
   },
-  bodyText: {
+  bodyTextLegacy: {
     color: COLORS.muted,
     fontSize: 13,
     lineHeight: 22,
@@ -301,13 +602,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 22,
   },
-  serviceGrid: {
+  serviceGridLegacy: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
     marginTop: 12,
   },
-  serviceCard: {
+  serviceCardLegacy: {
     width: "48%",
     flexGrow: 1,
     backgroundColor: COLORS.white,
@@ -318,7 +619,7 @@ const styles = StyleSheet.create({
     fontSize: 27,
     marginBottom: 12,
   },
-  serviceTitle: {
+  serviceTitleLegacy: {
     fontSize: 14,
     fontWeight: "800",
     color: COLORS.brown,

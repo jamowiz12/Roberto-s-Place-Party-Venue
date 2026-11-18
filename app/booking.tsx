@@ -1,38 +1,38 @@
-import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import PageShell from '../components/PageShell';
 
 export default function BookingScreen() {
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Booking status</Text>
-        <Link href="/" asChild>
-          <TouchableOpacity style={styles.backButton}>
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
+  const [step, setStep] = useState(1);
+  const [guests, setGuests] = useState('80');
+  const [submitted, setSubmitted] = useState(false);
+  const { width } = useWindowDimensions();
+  const wide = width >= 1024;
+  const steps = ['Guest', 'Package', 'Menu', 'Details', 'Review'];
 
-      <View style={styles.card}>
-        <Text style={styles.status}>Confirmed</Text>
-        <Text style={styles.event}>Birthday Celebration</Text>
-        <Text style={styles.info}>Date: 14 December 2026</Text>
-        <Text style={styles.info}>Venue: Garden Pavilion</Text>
-        <Text style={styles.info}>Guest Count: 80</Text>
+  return (
+    <PageShell>
+      <View style={styles.hero}><Text style={styles.eyebrow}>RESERVE YOUR CELEBRATION</Text><Text style={styles.title}>Plan your event</Text></View>
+      <View style={styles.progress}>{steps.map((label, index) => <View key={label} style={styles.progressItem}><View style={[styles.progressDot, step >= index + 1 && styles.progressDotActive]}><Text style={[styles.progressNumber, step >= index + 1 && styles.progressNumberActive]}>{index + 1}</Text></View><Text style={[styles.progressLabel, step === index + 1 && styles.progressLabelActive]}>{label}</Text></View>)}</View>
+      <View style={[styles.layout, wide && styles.layoutWide]}>
+        <View style={styles.formCard}>
+          {submitted ? <View style={styles.confirmation}><Text style={styles.confirmationIcon}>✓</Text><Text style={styles.confirmationTitle}>Inquiry received</Text><Text style={styles.confirmationText}>Your reservation request is ready for review. Our team will confirm availability and next steps.</Text><Pressable onPress={() => { setSubmitted(false); setStep(1); }} style={styles.secondaryButton}><Text style={styles.secondaryButtonText}>Plan another event</Text></Pressable></View> : (
+            <>
+              <Text style={styles.stepTitle}>{['Guest details', 'Select a package', 'Choose your menu', 'Event details', 'Review reservation'][step - 1]}</Text>
+              {step === 1 ? <><Text style={styles.label}>Full name</Text><TextInput style={styles.input} placeholder="Your name" /><Text style={styles.label}>Email address</Text><TextInput style={styles.input} placeholder="you@example.com" keyboardType="email-address" /></> : null}
+              {step === 2 ? <>{['Silver Celebration — ₱12,500', 'Gold Gathering — ₱18,900', 'Premium Event — ₱26,400'].map((item, index) => <Pressable key={item} style={[styles.option, index === 1 && styles.optionActive]}><Text style={[styles.optionText, index === 1 && styles.optionTextActive]}>{item}</Text></Pressable>)}</> : null}
+              {step === 3 ? <>{['Beef Caldereta', 'Chicken Inasal', 'Pancit Canton', 'Garden Vegetables', 'Fruit Platter'].map((item) => <Pressable key={item} style={styles.option}><Text style={styles.optionText}>✓  {item}</Text></Pressable>)}</> : null}
+              {step === 4 ? <><Text style={styles.label}>Number of guests</Text><TextInput value={guests} onChangeText={setGuests} style={styles.input} keyboardType="number-pad" /><Text style={styles.label}>Event date</Text><TextInput style={styles.input} placeholder="YYYY-MM-DD" /><Text style={styles.label}>Event time</Text><TextInput style={styles.input} placeholder="Example: 6:00 PM" /></> : null}
+              {step === 5 ? <><View style={styles.reviewRow}><Text style={styles.reviewLabel}>Package</Text><Text style={styles.reviewValue}>Gold Gathering</Text></View><View style={styles.reviewRow}><Text style={styles.reviewLabel}>Guests</Text><Text style={styles.reviewValue}>{guests}</Text></View><View style={styles.reviewRow}><Text style={styles.reviewLabel}>Estimated total</Text><Text style={styles.reviewValue}>₱18,900</Text></View><Text style={styles.notice}>Final availability, inclusions, and payment instructions are confirmed by the venue team.</Text></> : null}
+              <View style={styles.actions}><Pressable onPress={() => setStep((value) => Math.max(1, value - 1))} style={[styles.backButton, step === 1 && styles.backDisabled]}><Text style={styles.backText}>Previous</Text></Pressable><Pressable onPress={() => step === 5 ? setSubmitted(true) : setStep((value) => Math.min(5, value + 1))} style={styles.nextButton}><Text style={styles.nextText}>{step === 5 ? 'Submit reservation' : 'Continue'}</Text></Pressable></View>
+            </>
+          )}
+        </View>
+        <View style={styles.summary}><Text style={styles.summaryEyebrow}>YOUR SELECTION</Text><Text style={styles.summaryPackage}>Gold Gathering</Text><View style={styles.summaryDivider} /><View style={styles.summaryRow}><Text style={styles.summaryLabel}>Guests</Text><Text style={styles.summaryValue}>{guests}</Text></View><View style={styles.summaryRow}><Text style={styles.summaryLabel}>Package total</Text><Text style={styles.summaryValue}>₱18,900</Text></View><Text style={styles.summaryNote}>Summary updates as you complete your reservation.</Text></View>
       </View>
-    </ScrollView>
+    </PageShell>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F7F0E8' },
-  content: { padding: 20, paddingBottom: 40 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 18, marginBottom: 20 },
-  title: { fontSize: 28, fontWeight: '700', color: '#2D2D2D' },
-  backButton: { backgroundColor: '#2F3E36', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10 },
-  backText: { color: '#FFF8F2', fontWeight: '600' },
-  card: { backgroundColor: '#FFF', borderRadius: 20, padding: 22 },
-  status: { fontSize: 26, fontWeight: '800', color: '#304F47', marginBottom: 8 },
-  event: { fontSize: 20, fontWeight: '700', color: '#1F1F1F', marginBottom: 12 },
-  info: { color: '#5B544F', fontSize: 15, marginBottom: 8 },
+const styles = StyleSheet.create({ hero: { maxWidth: 1280, width: '100%', alignSelf: 'center', paddingHorizontal: 24, paddingTop: 58, paddingBottom: 24 }, eyebrow: { color: '#B58A46', fontSize: 10, fontWeight: '900', letterSpacing: 2.4, marginBottom: 10 }, title: { color: '#38251D', fontFamily: 'Georgia', fontSize: 42, lineHeight: 48 }, progress: { maxWidth: 1280, width: '100%', alignSelf: 'center', flexDirection: 'row', paddingHorizontal: 24, paddingBottom: 28 }, progressItem: { flex: 1, alignItems: 'center' }, progressDot: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#E7DCCB', alignItems: 'center', justifyContent: 'center' }, progressDotActive: { backgroundColor: '#C49A55' }, progressNumber: { color: '#887E74', fontWeight: '900', fontSize: 12 }, progressNumberActive: { color: '#38251D' }, progressLabel: { color: '#887E74', fontSize: 10, marginTop: 7 }, progressLabelActive: { color: '#38251D', fontWeight: '900' }, layout: { maxWidth: 1280, width: '100%', alignSelf: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 14, paddingHorizontal: 24, paddingBottom: 64 }, layoutWide: { flexWrap: 'nowrap' }, formCard: { width: '100%', flexGrow: 1, backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E8DECF', padding: 22, minHeight: 430 }, stepTitle: { color: '#38251D', fontFamily: 'Georgia', fontSize: 26, marginBottom: 20 }, label: { color: '#4D443E', fontSize: 12, fontWeight: '800', marginTop: 10, marginBottom: 7 }, input: { height: 48, borderRadius: 8, borderWidth: 1, borderColor: '#DED3C4', backgroundColor: '#FBF8F3', paddingHorizontal: 13, color: '#29231F' }, option: { height: 52, borderRadius: 8, borderWidth: 1, borderColor: '#DED3C4', justifyContent: 'center', paddingHorizontal: 14, marginBottom: 8 }, optionActive: { backgroundColor: '#38251D', borderColor: '#38251D' }, optionText: { color: '#29231F', fontWeight: '700' }, optionTextActive: { color: '#FFFFFF' }, actions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 24, gap: 10 }, backButton: { height: 48, borderRadius: 8, borderWidth: 1, borderColor: '#D8CCBC', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 }, backDisabled: { opacity: 0.4 }, backText: { color: '#38251D', fontWeight: '800' }, nextButton: { height: 48, borderRadius: 8, backgroundColor: '#38251D', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 18 }, nextText: { color: '#FFFFFF', fontWeight: '900' }, summary: { width: '100%', backgroundColor: '#38251D', borderRadius: 14, padding: 24, minHeight: 260 }, summaryEyebrow: { color: '#C49A55', fontSize: 9, fontWeight: '900', letterSpacing: 2 }, summaryPackage: { color: '#FFFFFF', fontFamily: 'Georgia', fontSize: 24, marginTop: 10 }, summaryDivider: { height: 1, backgroundColor: '#59483F', marginVertical: 20 }, summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }, summaryLabel: { color: '#D6CBBB', fontSize: 13 }, summaryValue: { color: '#FFFFFF', fontSize: 13, fontWeight: '900' }, summaryNote: { color: '#AFA296', fontSize: 11, lineHeight: 17, marginTop: 18 }, reviewRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#ECE3D7' }, reviewLabel: { color: '#887E74' }, reviewValue: { color: '#38251D', fontWeight: '900' }, notice: { color: '#887E74', fontSize: 12, lineHeight: 18, marginTop: 16 }, confirmation: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }, confirmationIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#C49A55', color: '#38251D', textAlign: 'center', lineHeight: 64, fontSize: 28, fontWeight: '900' }, confirmationTitle: { color: '#38251D', fontFamily: 'Georgia', fontSize: 28, marginTop: 16 }, confirmationText: { color: '#887E74', textAlign: 'center', lineHeight: 21, maxWidth: 420, marginTop: 10 }, secondaryButton: { height: 48, borderRadius: 8, borderWidth: 1, borderColor: '#38251D', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16, marginTop: 18 }, secondaryButtonText: { color: '#38251D', fontWeight: '900' },
 });
