@@ -36,5 +36,20 @@ export default async function Admin() {
     packages: (packages || []).find((item) => item.id === reservation.package_id) || null,
   }))
 
-  return <AdminClient reservations={normalizedReservations} />
+  const [{ data: payments, error: paymentsError }, { data: paymentAudit, error: auditError }] = await Promise.all([
+    supabase.from('reservation_payments')
+      .select('id, reservation_id, customer_id, amount, payment_method, payment_type, status, receipt_path, reference_number, acknowledgment_reference, acknowledgment_path, verified_by, verified_at, created_at')
+      .order('created_at', { ascending: false }),
+    supabase.from('reservation_payment_audit')
+      .select('id, payment_id, actor_id, action, previous_value, new_value, reason, created_at')
+      .order('created_at', { ascending: false }),
+  ])
+
+  return <AdminClient
+    reservations={normalizedReservations}
+    payments={payments || []}
+    paymentAudit={paymentAudit || []}
+    paymentLedgerAvailable={!paymentsError && !auditError}
+    paymentLedgerPresent={!paymentsError || !['42P01', 'PGRST205'].includes(paymentsError.code || '')}
+  />
 }

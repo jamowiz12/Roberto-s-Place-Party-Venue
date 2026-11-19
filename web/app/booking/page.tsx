@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { attachReservationReceipt, createReservation } from '../actions'
+import { createReservation } from '../actions'
 
 type PackageRow = {
   id: number
@@ -26,7 +27,6 @@ export default function Booking() {
   const [eventDate, setEventDate] = useState('')
   const [eventTime, setEventTime] = useState('')
   const [reservationId, setReservationId] = useState<number | null>(null)
-  const [receipt, setReceipt] = useState<File | null>(null)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, startTransition] = useTransition()
@@ -78,55 +78,7 @@ export default function Booking() {
     })
   }
 
-  const uploadReceipt = () => {
-    setError('')
-    setMessage('')
-    if (!reservationId) {
-      setError('Submit the reservation before uploading a receipt.')
-      return
-    }
-    if (!receipt) {
-      setError('Choose a payment receipt file.')
-      return
-    }
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
-    if (!allowedTypes.includes(receipt.type)) {
-      setError('Only JPEG, PNG, WebP, and PDF receipts are accepted.')
-      return
-    }
-    if (receipt.size > 5 * 1024 * 1024) {
-      setError('Receipt files must be 5 MB or smaller.')
-      return
-    }
-
-    startTransition(async () => {
-      const supabase = createClient()
-      const { data: claims } = await supabase.auth.getClaims()
-      if (!claims?.claims) {
-        setError('Please log in before uploading a receipt.')
-        return
-      }
-      const userId = claims.claims.sub as string
-      const extension = receipt.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
-      const path = `${userId}/${Date.now()}-${crypto.randomUUID()}.${extension}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('payment-receipts')
-        .upload(path, receipt, { contentType: receipt.type, upsert: false })
-
-      if (uploadError) {
-        setError('Receipt upload failed. Please try again.')
-        return
-      }
-
-      const result = await attachReservationReceipt(reservationId, path)
-      if ('error' in result) setError(result.error || 'The receipt could not be attached.')
-      else setMessage('Receipt uploaded. Payment is pending verification.')
-    })
-  }
-
-  const steps = ['Guest', 'Package', 'Food', 'Equipment', 'Review', 'Receipt']
+  const steps = ['Guest', 'Package', 'Food', 'Equipment', 'Review', 'Confirmation']
 
   return (
     <section className="content-section">
@@ -200,11 +152,26 @@ export default function Booking() {
 
           {step === 6 && (
             <>
-              <h2>Payment receipt</h2>
-              <p style={{ color: '#887E74' }}>Upload JPEG, PNG, WebP, or PDF. Maximum size: 5 MB.</p>
-              <div className="field"><label htmlFor="receipt">Receipt file</label><input id="receipt" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(event) => setReceipt(event.target.files?.[0] || null)} /></div>
-              <button type="button" className="primary" disabled={loading || !reservationId} onClick={uploadReceipt}>{loading ? 'Uploading…' : 'Upload receipt'}</button>
-              {reservationId ? <p style={{ marginTop: 12, fontSize: 13 }}>Reservation #{reservationId}</p> : null}
+              <h2>Reservation submitted!</h2>
+              <p style={{ color: '#466657' }}>Your reservation has been submitted with pending status.</p>
+              <div className="info-card" style={{ margin: '18px 0' }}>
+                <p><strong>Reservation number:</strong> #{reservationId}</p>
+                <p><strong>Event:</strong> {eventType}</p>
+                <p><strong>Package:</strong> {selectedPackage?.name || 'Catering package'}</p>
+                <p><strong>Guests:</strong> {guestCount}</p>
+                <p><strong>Date:</strong> {eventDate} at {eventTime}</p>
+                <p><strong>Booking total:</strong> ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              </div>
+              <p style={{ color: '#887E74' }}>Proceed to your profile to choose your payment amount and in-person payment method.</p>
+              {reservationId ? (
+                <Link
+                  href={`/profile?payment=${reservationId}#reservation-${reservationId}`}
+                  className="primary"
+                  style={{ display: 'inline-block', textDecoration: 'none', marginTop: 12 }}
+                >
+                  Proceed to Payment
+                </Link>
+              ) : null}
             </>
           )}
 
